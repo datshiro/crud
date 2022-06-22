@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/datshiro/crud/internal/controllers"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,7 +27,7 @@ type app struct {
 }
 
 func (a *app) RegisterHandlers() {
-	panic("not implemented") // TODO: Implement
+	controllers.RegisterHandlers(a.e, a.ApiPrefix)
 }
 
 func (a *app) Run() error {
