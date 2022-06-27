@@ -1,8 +1,7 @@
 package users
 
 import (
-	"fmt"
-
+	"github.com/datshiro/crud/internal/infras/errors"
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,7 +28,7 @@ func (p *postRequest) Bind(e echo.Context) error {
 
 func (p *postRequest) Validate() error {
 	if p.Name == "" {
-		return fmt.Errorf("Error: Name cannot be empty")
+		return errors.NewParamErr("Name must be provided")
 	}
 	return nil
 }

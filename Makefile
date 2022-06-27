@@ -23,3 +23,9 @@ db/%:
 
 db/gen:
 	sqlboiler psql --wipe --config ./db/sqlboiler.toml --add-soft-deletes 
+
+db/connect:
+	pgcli -h ${DB_HOST} -p ${DB_PORT} -u ${DB_USERNAME} 
+
+test:
+	@scripts/test.sh

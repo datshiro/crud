@@ -26,3 +26,23 @@ type PostRequest interface {
 	GetName() string
 	GetEmail() string
 }
+
+type GetRequest interface {
+	Bind(echo.Context) error
+	Validate() error
+	GetId() int
+}
+
+type PutRequest interface {
+	Validate() error
+	Bind(echo.Context) error
+	GetID() int
+	GetName() string
+	GetEmail() string
+}
+
+type DeleteRequest interface {
+	Bind(echo.Context) error
+	Validate() error
+	GetId() int
+}

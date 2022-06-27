@@ -12,8 +12,10 @@ func main() {
 	app.Parse()
 
 	app.ConfigMiddleware()
-
 	app.ConfigLogLevel()
+	app.ConfigLogFormat()
+
+	app.ConfigErrorHandler()
 
 	app.RegisterHandlers()
 

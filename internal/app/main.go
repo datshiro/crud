@@ -8,6 +8,8 @@ import (
 type App interface {
 	ConfigMiddleware()
 	ConfigLogLevel()
+	ConfigErrorHandler()
+	ConfigLogFormat()
 	RegisterHandlers()
 	Parse()
 	Run() error

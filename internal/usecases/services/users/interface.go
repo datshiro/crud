@@ -16,4 +16,8 @@ func NewService(ctx context.Context, exec boil.ContextExecutor) UserService {
 
 type UserService interface {
 	Create(name string, email string) (*models.User, error)
+	FindById(id int) (*models.User, error)
+	FindByIdForUpdate(id int) (*models.User, error)
+	Update(user *models.User) error
+	DeleteById(id int) error
 }

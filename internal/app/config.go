@@ -2,10 +2,13 @@ package app
 
 import (
 	"flag"
+	"net/http"
 	"os"
 	"strings"
 
+	"github.com/datshiro/crud/internal/infras/errors"
 	"github.com/datshiro/crud/internal/infras/middlewares"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
@@ -60,5 +63,50 @@ func (a *app) ConfigLogLevel() {
 		fallthrough
 	default:
 		a.e.Logger.SetLevel(log.DEBUG)
+	}
+}
+func (a *app) ConfigErrorHandler() {
+	defaultHandler := a.e.HTTPErrorHandler
+	a.e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if c.IsWebSocket() {
+			return
+		}
+		switch err.(type) {
+		case errors.CustomError, errors.CustomParamError:
+			_ = c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+
+		default:
+			defaultHandler(err, c)
+		}
+	}
+}
+
+// configLogHeader change echo global log format, and adhoc log prefix
+// for more readable. The default one produces log in JSON format, with is
+// intended to be collected by other tools, but we're not using such tools yet.
+func (a *app) ConfigLogFormat() {
+	a.e.HideBanner = true
+	a.e.Logger.SetOutput(os.Stderr)
+
+	// make echo context log more readable.
+	if l, ok := a.e.Logger.(*log.Logger); ok {
+		l.SetHeader("${time_rfc3339} ${level} ${short_file}:${line}")
+	}
+
+	// make echo request/response log (once per request) more readable
+	a.e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `${time_rfc3339} requestID=${id} remote_ip=${remote_ip} ` +
+			`${method} ${path} status=${status} err=${error} ` +
+			`latency=${latency_human} user_agent=${user_agent}`,
+	}))
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+func NewErrorResponse(err error) ErrorResponse {
+	return ErrorResponse{
+		Error: err.Error(),
 	}
 }
