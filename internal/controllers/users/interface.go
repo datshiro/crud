@@ -30,7 +30,10 @@ type PostRequest interface {
 type GetRequest interface {
 	Bind(echo.Context) error
 	Validate() error
+	IsPagination() bool
 	GetId() int
+	GetPage() int
+	GetLimit() int
 }
 
 type PutRequest interface {

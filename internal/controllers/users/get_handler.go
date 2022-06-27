@@ -28,6 +28,9 @@ func (g *getHandler) Handle(c echo.Context) error {
 	if err := request.Validate(); err != nil {
 		return err
 	}
+	if request.IsPagination() {
+		return g.getPagination(request, c)
+	}
 
 	ctx, exc := inject.CtxDB(c)
 	service := services.GetUserService(ctx, exc)
@@ -36,5 +39,15 @@ func (g *getHandler) Handle(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, NewResponse(user))
+}
+
+func (g *getHandler) getPagination(request GetRequest, c echo.Context) error {
+	ctx, exec := inject.CtxDB(c)
+	service := services.GetUserService(ctx, exec)
+	users, err := service.GetPagination(request.GetPage(), request.GetLimit())
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, NewResponses(users))
 }

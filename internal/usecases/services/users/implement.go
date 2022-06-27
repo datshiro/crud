@@ -65,3 +65,13 @@ func (u *userService) DeleteById(id int) error {
 	return err
 }
 
+func (u *userService) GetPagination(page int, limit int) (models.UserSlice, error) {
+	users, err := models.Users(
+		qm.Offset(page*limit-limit),
+		qm.Limit(limit),
+	).All(u.ctx, u.exec)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

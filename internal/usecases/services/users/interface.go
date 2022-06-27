@@ -18,6 +18,7 @@ type UserService interface {
 	Create(name string, email string) (*models.User, error)
 	FindById(id int) (*models.User, error)
 	FindByIdForUpdate(id int) (*models.User, error)
+	GetPagination(page int, limit int) (models.UserSlice, error)
 	Update(user *models.User) error
 	DeleteById(id int) error
 }
