@@ -10,6 +10,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func newMockUser(name, email string) []byte {
+	return []byte(fmt.Sprintf(`{"name":"%s","email":"%s"}`, name, email))
+}
+func newMockUpdateUser(id int, name, email string) []byte {
+	return []byte(fmt.Sprintf(`{"id": %d, "name":"%s","email":"%s"}`, id, name, email))
+}
+
 var (
 	DbUrl        = "postgres://postgres:postgres@localhost:5432/crud?sslmode=disable"
 	mockName     = "dat_test"

@@ -15,37 +15,43 @@ type GetUserTestCase struct {
 	Limit           string
 	Page            string
 	ExpectedErr     error
-	ExpectedErrFunc func(*testing.T, *httptest.ResponseRecorder)
+	ExpectedErrFunc func(*testing.T, *httptest.ResponseRecorder, error)
 }
 
 var GetUserTestCases = map[string]GetUserTestCase{
 	"should return nil error": {
 		ID: "2",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 			assert.Equal(t, userJSON, rec.Body.String())
 		},
 	},
 	"should return not found error": {
 		ID: "100",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 		},
 		ExpectedErr: errors.DataNotFoundError,
 	},
 	"should return invalid id error": {
 		ID: "-1",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 		},
 		ExpectedErr: errors.InvalidIdError,
+	},
+	"should return invalid bind error": {
+		ID: "abc",
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
+			assert.IsType(t, &echo.HTTPError{}, err)
+		},
 	},
 }
 var GetPaginationUserTestCases = map[string]GetUserTestCase{
 	"should return nil error": {
 		Page:  "1",
 		Limit: "2",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 			assert.NotEmpty(t, rec.Body.String())
 		},
@@ -53,7 +59,7 @@ var GetPaginationUserTestCases = map[string]GetUserTestCase{
 	"should return invalid error": {
 		Page:  "0",
 		Limit: "0",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 		},
 		ExpectedErr: errors.InvalidParamError,
@@ -61,7 +67,7 @@ var GetPaginationUserTestCases = map[string]GetUserTestCase{
 	"should return page non negative error": {
 		Page:  "-1",
 		Limit: "2",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 		},
 		ExpectedErr: errors.NewParamErr("page must be non negative"),
@@ -69,10 +75,17 @@ var GetPaginationUserTestCases = map[string]GetUserTestCase{
 	"should return limit non negative error": {
 		Page:  "1",
 		Limit: "-2",
-		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder) {
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 		},
 		ExpectedErr: errors.NewParamErr("limit must be non negative"),
+	},
+	"should return invalid bind error": {
+		Page:  "abc",
+		Limit: "xyz",
+		ExpectedErrFunc: func(t *testing.T, rec *httptest.ResponseRecorder, err error) {
+			assert.IsType(t, &echo.HTTPError{}, err)
+		},
 	},
 }
 
@@ -100,7 +113,7 @@ func TestGetUser(t *testing.T) {
 			}
 
 			// Assertions
-			tCase.ExpectedErrFunc(t, rec)
+			tCase.ExpectedErrFunc(t, rec, err)
 		})
 	}
 }
@@ -128,7 +141,7 @@ func TestGetPaginationUser(t *testing.T) {
 				assert.Equal(t, tCase.ExpectedErr, err)
 			}
 			// Assertions
-			tCase.ExpectedErrFunc(t, rec)
+			tCase.ExpectedErrFunc(t, rec, err)
 		})
 	}
 }
