@@ -90,14 +90,13 @@ var GetPaginationUserTestCases = map[string]GetUserTestCase{
 }
 
 var (
-	userJSON = `{"id":2,"name":"dat","email":"datshiro@gmail.com"}` + "\n"
+	userJSON = `{"id":2,"name":"dat_test","email":"datshiro_test@gmail.com"}` + "\n"
 )
 
 func TestGetUser(t *testing.T) {
 	// Setup
 	e := echo.New()
 	h := NewGetHandler()
-	e.GET("/users/:id", h.Handle)
 	for tName, tCase := range GetUserTestCases {
 		t.Run(tName, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -122,7 +121,6 @@ func TestGetPaginationUser(t *testing.T) {
 	// Setup
 	e := echo.New()
 	h := NewGetHandler()
-	e.GET("/users", h.Handle)
 	for tName, tCase := range GetPaginationUserTestCases {
 		t.Run(tName, func(t *testing.T) {
 			// Build request

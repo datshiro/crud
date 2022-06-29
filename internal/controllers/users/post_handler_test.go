@@ -49,7 +49,6 @@ func TestCreateUser(t *testing.T) {
 	e := echo.New()
 
 	h := NewPostHandler()
-	e.POST("/users", h.Handle)
 	for tName, tCase := range CreateUserTestCases {
 		t.Run(tName, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(newMockUser(tCase.Name, tCase.Email))+"\n"))

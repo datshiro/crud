@@ -47,6 +47,9 @@ func (u *userService) FindByIdForUpdate(id int) (*models.User, error) {
 	model, err := models.Users(models.UserWhere.ID.EQ(id),
 		qm.For("update")).One(u.ctx, u.exec)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.DataNotFoundError
+		}
 		return nil, err
 	}
 	return model, nil

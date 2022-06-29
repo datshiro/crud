@@ -33,6 +33,7 @@ var (
 
 func SetupContext(e *echo.Echo, req *http.Request, rec *httptest.ResponseRecorder) echo.Context {
 	c := e.NewContext(req, rec)
+	RegisterHandlers(e, "api")
 	dbc, err := db.NewDB(DbUrl)
 	if err != nil {
 		fmt.Println(err)

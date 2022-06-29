@@ -54,7 +54,6 @@ func TestPutUser(t *testing.T) {
 	e := echo.New()
 
 	h := NewPutHandler()
-	e.PUT("/users", h.Handle)
 	for tName, tCase := range UpdateUserTestCases {
 		t.Run(tName, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(newMockUpdateUser(tCase.ID, tCase.Name, tCase.Email))+"\n"))

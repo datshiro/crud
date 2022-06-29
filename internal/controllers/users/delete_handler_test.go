@@ -49,7 +49,6 @@ func TestDeleteUser(t *testing.T) {
 	// Setup
 	e := echo.New()
 	h := NewDeleteHandler()
-	e.DELETE("/users/:id", h.Handle)
 	for tName, tCase := range DeleteUserTestCases {
 		t.Run(tName, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodDelete, "/", nil)
